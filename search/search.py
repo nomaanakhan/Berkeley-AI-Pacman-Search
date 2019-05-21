@@ -87,17 +87,44 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return genericSearch(problem, 1)
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return genericSearch(problem, 2)
+
+def genericSearch(problem, i):
+    """Search deepest node first (dfs) if i is 1 else it searches the shallowest node first (bfs)."""
+
+    if i is 1:
+        open = util.Stack()  # Stores states that need to be expanded for dfs.
+        currentPath = util.Stack()  # Stores path of expanded states for dfs.
+    else:
+        open = util.Queue()  # Stores states that need to be expanded for bfs.
+        currentPath = util.Queue()  # Stores path of expanded states for bfs.
+
+    closed = []  # Stores states that have been expanded.
+    finalPath = []  # Store final path of states.
+
+    open.push(problem.getStartState())
+    currState = open.pop()  # Current State.
+    while not problem.isGoalState(currState):   # Search until goal state.
+
+        if currState not in closed:  # New state found.
+            closed.append(currState)  # Add state to closed.
+            for successor in problem.getSuccessors(currState):  # Adding successors of current state.
+                open.push(successor[0])  # Add to open.
+                currentPath.push(finalPath + [successor[1]])  # Store path.
+
+        currState = open.pop()  # Update current State.
+        finalPath = currentPath.pop()  # Add to final path.
+    return finalPath
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return genericSearch2(problem, None)
 
 def nullHeuristic(state, problem=None):
     """
@@ -109,8 +136,34 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return genericSearch2(problem, heuristic)
 
+def genericSearch2(problem, heuristic):
+    """Search the node of least total cost first depending on heuristic passed."""
+
+    open = util.PriorityQueue()  # Stores states that need to be expanded for Uniform Cost Search.
+    currPath = util.PriorityQueue()  # Stores path of expanded states.
+    closed = []  # Stores states that have been expanded.
+    finalPath = []  # Store final path of states.
+
+    open.push(problem.getStartState(), 0)
+    currState = open.pop()  # Current State.
+    while not problem.isGoalState(currState):  # Search until goal state.
+        if currState not in closed:  # New state found.
+            closed.append(currState)  # Add state to closed.
+
+            for successor in problem.getSuccessors(currState):  # To calculate costs of successors of current state.
+                pathCost = problem.getCostOfActions(finalPath + [successor[1]])  # Cost of selecting successor.
+                if heuristic is not None:  # Add heuristic if A* search.
+                    pathCost += heuristic(successor[0], problem)
+                if successor[0] not in closed:  # If successor is a new state add to open queue and store path.
+                    open.push(successor[0], pathCost)
+                    currPath.push(finalPath + [successor[1]], pathCost)
+
+        currState = open.pop()  # Update current state.
+        finalPath = currPath.pop()  # Add to final path.
+
+    return finalPath
 
 # Abbreviations
 bfs = breadthFirstSearch
