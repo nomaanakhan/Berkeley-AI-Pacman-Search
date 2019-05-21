@@ -1,4 +1,4 @@
-# AI-Pacman-Search
+# Berkeley-AI-Pacman-Search
 Implementing Depth First Search, Breadth First Search, Uniform Cost Search, and A* Search for a pacman.
 
 For full documentation refer http://ai.berkeley.edu/search.html
